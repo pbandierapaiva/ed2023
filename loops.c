@@ -20,7 +20,6 @@ int main() {
         return 0;
     }
     
-    
     printf("Entrando %d valores:\n", n);
     for( int conta=0; conta<n ; conta++) { 
         printf("%d > ", conta+1);
