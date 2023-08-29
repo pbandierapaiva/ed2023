@@ -1,4 +1,4 @@
-// Trabalhando com caracteres
+// Trabalhando com caracteres - Inverte string
 
 #include <stdio.h>
 #include <string.h>
