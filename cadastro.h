@@ -47,4 +47,30 @@
 #define DIPLOMA_INGRESSO_SERVICOPUBLICO	41
 #define UF_EXERCICIO	42
 
+typedef struct {
+	char Nome[100];
+	char DescCargo[50];
+	char uOrg[100];		// UORG_LOTACAO
+	char Org[100];		// ORG_LOTACAO
+	char OrgSup[100];		// ORGSUP_LOTACAO
+} CADBAS;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
