@@ -1,5 +1,5 @@
 // Trabalhando com arquivos
-// utiliza arquivo estruturado (com estrutura do registro CADBAS
+// utiliza arquivo estruturado (com estrutura do registro CADBAS)
 // para pesquisar no arquivo
 
 #include <stdio.h>
