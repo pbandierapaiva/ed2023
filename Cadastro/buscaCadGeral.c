@@ -44,7 +44,7 @@ int main( int argc, char *argv[] ){
 	fgets( linha, TAM_MAX, fp );
 	while( fgets( linha, TAM_MAX, fp ) ) {
 		pegaCampo(linha, NOME, nlido);
-		if( ! strcmp(nome,nlido) ) {
+		if( strstr(nlido, nome) ) {
 			pegaReg( &reg, linha);
 			imprimeReg( reg );
 			}
