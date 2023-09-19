@@ -1,5 +1,5 @@
 // Programa que faz busca no Cadastro Geral de Servidores usando arquivo de indice
-// Armazena resultados num vetor de CADIND
+// Armazena resultados numa lista encadeada de CADIND:  LISTACADIND
 //
 
 
@@ -25,7 +25,10 @@ int main( int argc, char *argv[] ){
 	CADBAS reg;
 	CADIND regind;
 	
-	CADIND *resultado;
+	LISTACADIND *resultado, *pres;
+	
+	resultado = NULL;
+	pres = NULL;
 	
 	printf("Executando busca indexada no arquivo.\n");
 	if( argc < 2 ){
@@ -42,58 +45,65 @@ int main( int argc, char *argv[] ){
 	*p = '\0';	
 
 // Busca indexada no cadastro		
-	fp = fopen( "/home/pub/ed/Cadastro.csv", "r" );
 	indfp = fopen( "Cadastro.ind", "r" );
-	if(!fp || !indfp){
-		printf("Erro de abertura de arquivo.\n");
+	if(!indfp){
+		printf("Erro de abertura de arquivo índice.\n");
 		exit(-1);
 		}
 
-	resultado = malloc( maxRegs * sizeof(CADIND) );
 	while( fread( &regind, sizeof(regind), 1, indfp ) ){
 		if( strstr(regind.Nome, nome) ) {
-			if( contador == maxRegs ){
-				maxRegs += 10;
-				resultado = realloc(resultado, maxRegs*sizeof(CADIND));
-				if(!resultado){
-					printf("\nErro de alocação de memória\n");
-					return -1;
-					}
+			// Encontrado registro
+			resultado = malloc( sizeof(LISTACADIND) );
+			if(!resultado) {
+				printf("Erro de alocação de memória.\n\n");
+				return -1;
 				}
-			resultado[contador] = regind;
-			contador+=1;			
+			resultado->cadind = regind;
+			resultado->prox = pres;
+			pres = resultado;	
 			}
 		}
 	
-	if(!contador) {
+	if( resultado == NULL ) {
 		printf("\nNenhum registro encontrado\n");
 		return 0;
 		}
-	
-	if( contador==1 ) {
+	if( resultado->prox == NULL ) {
 		regInteresse=1;
 		}
 	else {
 		printf("\nRegistros encontrados: \n");
-		for( int i=0; i<contador; i++) {
-			printf("%d %s\n", i+1, resultado[i].Nome);
+		pres = resultado;
+		contador=0;
+		while( pres != NULL ){
+			contador++;
+			printf("%d %s\n", contador, pres->cadind.Nome);
+			pres = pres->prox;
 			}
 		printf("\nEntre com o número do registro de interesse: \n");
 		scanf( "%d", &regInteresse );
 		}
+
 	if( regInteresse<=0 || regInteresse>contador ){
 		printf("\nRegistro inválido\n");
 		return 0;
 		}
 	
+	fp = fopen( "/home/pub/ed/Cadastro.csv", "r" );	
+	if(!fp ){
+		printf("Erro de abertura de arquivo CSV.\n");
+		exit(-1);
+		}
+
+	pres = resultado;
+	for(int i=0; i<(regInteresse-1); i++)
+		pres = pres->prox;		
 		
-	fseek( fp, resultado[regInteresse-1].posicao, 0 );
+	fseek( fp, pres->cadind.posicao, 0 );
 	fgets( linha, TAM_MAX, fp );
 	pegaReg( &reg, linha );
 	imprimeReg( reg );
-
-
-
 
 	fclose(fp);
 	fclose(indfp);

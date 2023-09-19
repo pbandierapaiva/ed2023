@@ -61,6 +61,12 @@ typedef struct {
 	long int posicao;
 } CADIND;
 
+typedef struct ListaCadInd {
+	CADIND cadind;
+	struct ListaCadInd *prox;
+} LISTACADIND;
+
+
 
 // Protótipos de funções
 int pegaCampo(char *, int, char *);
