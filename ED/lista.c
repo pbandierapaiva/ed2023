@@ -4,15 +4,68 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct  listaS {
+typedef struct  listaS {
 	int carga;
 	struct listaS *prox;
-};
+} ListaSE;
+
+void insereLista( ListaSE **l, int valor ) {
+	ListaSE *novoNo, *ptr;
+
+	novoNo = malloc( sizeof(ListaSE) );
+	if( novoNo==NULL ) {
+		printf("Erro de alocação de memória\n\n");
+		exit(-1);
+		}
+	novoNo->carga = valor;
+	novoNo->prox = NULL;
+
+	if( *l==NULL ) {
+		*l=novoNo;
+		return;
+	}
+	ptr = *l;
+	while( ptr->prox != NULL )
+		ptr = ptr->prox;
+	ptr->prox = novoNo;	
+}
+
+void imprimeLista( ListaSE *l ) {
+        ListaSE *ptr;
+
+        printf("\nImprimindo lista encadeada\n");
+        ptr = l;
+        if( !ptr ) {
+                printf("lista vazia\n");
+                return;
+        }
+        while( ptr ) {
+                printf("%d\n", ptr->carga );
+                ptr = ptr->prox;
+        }
+}
+
+void imprimeListaInvertidaRecursivo( ListaSE *l ) {
+	if( l==NULL )
+		return;
+	imprimeListaInvertidaRecursivo( l->prox );
+	printf("%d\n", l->carga );
+}
+
+void imprimeListaInvertida( ListaSE *l ) {
+
+        printf("\nImprimindo lista encadeada INVERTIDA\n");
+	if( !l ) {
+		printf("lista vazia\n");
+	        return;
+	}
+	imprimeListaInvertidaRecursivo( l );
+}
 
 int main() {
 	int inteiroLido;
 
-	struct listaS *lista, *novoElemento, *ptr, *ptrAnt;
+	ListaSE *lista, *novoElemento, *ptr, *ptrAnt;
 
 	lista=NULL;
 
@@ -23,66 +76,11 @@ int main() {
 		scanf("%d", &inteiroLido);
 		if( inteiroLido <=0 )
 			break;
-
-		novoElemento = malloc( sizeof(struct listaS) );
-		if( novoElemento==NULL ) {
-			printf("Erro de alocação de memória\n\n");
-			break;
-		}
-		novoElemento->carga = inteiroLido;
-		novoElemento->prox = NULL;
-		
-		ptr = lista;
-		if( ptr==NULL ) {
-			lista = novoElemento;
-		}
-		else {
-			while( ptr->prox!=NULL ) {
-				ptr = ptr->prox;
-			}
-			ptr->prox = novoElemento;
-		}
+		insereLista(&lista, inteiroLido);
 		
 	}
 	
-// percorre a lista
-	ptr = lista;
-	while( ptr ) {
-		printf("%d\n", ptr->carga );
-		ptr = ptr->prox;
-	}
-
-	printf("\nDeseja remover que elemento: ");
-	scanf("%d", &inteiroLido);
-	
-	ptr = lista;
-	if(ptr->carga==inteiroLido) {
-		lista = lista->prox;
-		free(ptr);
-	}
-	else {
-		while( ptr!=NULL ) {
-			if(ptr->prox==NULL)
-				break;
-			if(ptr->prox->carga==inteiroLido) {
-				ptrAnt=ptr->prox;
-				ptr->prox = ptr->prox->prox;
-				free(ptrAnt);
-				}
-			ptr = ptr->prox;
-		}
-	
-	}
-	
-// percorre a lista
-	ptr = lista;
-	while( ptr ) {
-		printf("%d\n", ptr->carga );
-		ptr = ptr->prox;
-	}
-
-	return 0;
-	
-	
+	imprimeLista(lista);	
+	imprimeListaInvertida(lista);	
 }
 
