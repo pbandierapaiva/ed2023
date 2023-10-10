@@ -12,8 +12,7 @@ typedef struct  listaS {
 } ListaSE;
 
 int sorteia(int max) {
-	srandom(time(NULL));
-	return (int) ( max * (random() / (pow(2,31) )));
+	return random()%max;
 	}
 
 int tamanho( ListaSE *saco ){
@@ -32,7 +31,7 @@ void remover(ListaSE **saco, ListaSE *item) {
 	
 	ptr = *saco;
 	if( ptr == item ) {	//remove primeiro item
-		*saco = NULL;
+		*saco = item->prox;
 		free(ptr);
 		return;
 		}
@@ -86,7 +85,8 @@ int main() {
 	ListaSE *saco;
 
 	saco=NULL;
-
+	srandom(time(NULL));
+	
 	printf("\nEntre com inteiros positivos (0 termina)\n");
 
 	while( 1 ) {
