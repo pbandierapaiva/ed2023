@@ -61,12 +61,27 @@ void entraDados( NO **noPai ){
 }
 
 void emOrdem( NO *noPai ) {
-	
 	if( noPai->noE )
 		emOrdem(noPai->noE);
 	printf("%d\n", noPai->carga );
 	if( noPai->noD )
 		emOrdem(noPai->noD);
+}
+
+void preOrdem( NO *noPai ) {
+	printf("%d\n", noPai->carga );
+	if( noPai->noE )
+		emOrdem(noPai->noE);
+	if( noPai->noD )
+		emOrdem(noPai->noD);
+}
+
+void posOrdem( NO *noPai ) {
+	if( noPai->noE )
+		emOrdem(noPai->noE);
+	if( noPai->noD )
+		emOrdem(noPai->noD);
+	printf("%d\n", noPai->carga );
 }
 
 int main() {
