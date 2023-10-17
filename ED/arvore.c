@@ -6,7 +6,8 @@
 
 
 typedef struct no {
-	int carga;
+	int carga;	
+
 	struct no *noE;
 	struct no *noD;
 	} NO;
@@ -44,6 +45,61 @@ int altura( NO *meuNo ){
 		return alturaE+1;
 	else
 		return alturaD+1;
+}
+
+NO *pai( NO *r, NO *noInteresse ) {
+	
+	if( noInteresse == r ) return NULL;
+	
+	if( noInteresse->carga > r->carga ) {
+		if( r->noD == noInteresse )
+			return r;
+		return pai( r->noD, noInteresse );
+	}
+	else {
+		if( r->noE == noInteresse )
+			return r;
+		return pai( r->noE, noInteresse );
+	}
+}
+
+NO *buscaNo( NO *raiz, int valor ){
+	if( raiz->carga == valor )
+		return raiz;
+	if( valor > raiz->carga ) {
+		if(raiz->noD==NULL) return NULL;
+		return buscaNo(raiz->noD, valor);
+	}
+	else {
+		if(raiz->noE==NULL) return NULL;
+		return buscaNo(raiz->noE, valor);
+	}
+
+}
+
+void encontraNoePai(NO *raiz) {
+	NO *n, *p;
+	int valor;	
+
+	while(1) {
+		printf("\nEntre com carga a ser encontrada (0 termina): ");
+		scanf("%d", &valor);
+		if(!valor) return 0;
+			
+		n = buscaNo( raiz, valor );
+		if(n) {
+			p = pai( raiz, n );
+			
+			printf("Encontrado em %ld carga %d\n", (long int)n, n->carga);
+			if(p)
+				printf("O pai do nó tem carga  %d\n", p->carga);
+			else
+				printf("Esse nó não tem pai, é a raiz da árvore\n");
+			
+			}
+		else
+			printf("Carga não encontrada\n");
+		}
 }
 
 void entraDados( NO **noPai ){
@@ -85,12 +141,15 @@ void posOrdem( NO *noPai ) {
 }
 
 int main() {
-	NO *raiz = NULL;	
+	NO *raiz = NULL;
 
 	entraDados( &raiz );
 	printf("\nA altura da sua árvore binária é: %d\n\n", altura(raiz) );
 
 	emOrdem( raiz );
+	
+	encontraNoePai( raiz );
+	
 }
 
 
