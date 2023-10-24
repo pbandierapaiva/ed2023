@@ -11,6 +11,14 @@ typedef struct no {
 	struct no *noE;
 	struct no *noD;
 	} NO;
+
+void insere( NO **, int  );
+NO *checaAVL( NO *noPai );
+void insereAVL( NO **noPai, int valor );
+int altura( NO *meuNo );
+int fb( NO *no );
+NO *pai( NO *r, NO *noInteresse );
+
 	
 void insere( NO **noPai, int valor ){
 	NO *novoNo;
@@ -31,12 +39,65 @@ void insere( NO **noPai, int valor ){
 		insere( &((*noPai)->noD ), valor);
 }
 
+NO *checaAVL( NO *noPai ){
+	int fbPai;
+	NO *p;
+	
+	if(noPai==NULL) 
+		return NULL;
+		
+	fbPai = fb(noPai);
+	if( fbPai>1 || fbPai<-1 )
+		return noPai;
+	
+	p = checaAVL( noPai->noD );
+	if( p ) return p;
+	p = checaAVL( noPai->noE );
+	if( p ) return p;
+	
+	return NULL;
+}
+
+
+
+void insereAVL( NO **noPai, int valor ){
+	NO *novoNo;
+	int fbPai;
+	
+	novoNo = malloc( sizeof(NO) );
+	if(novoNo==NULL) exit(-1);
+	novoNo->carga = valor;
+	novoNo->noE = NULL;
+	novoNo->noD = NULL;	
+
+	if( *noPai == NULL ) { 
+		*noPai = novoNo;
+		return;
+		}
+			
+	fbPai = fb( *noPai );
+
+	if( (*noPai)->carga > valor) {
+		if(fbPai==-1) // desbalanceou
+		
+		insere( &((*noPai)->noE ), valor);
+		}
+	else {
+		if(fbPai==1)  // desbalanceou
+		
+		insere( &((*noPai)->noD ), valor);
+		}
+}
+
+
 int altura( NO *meuNo ){
 	int alturaD=0;
 	int alturaE=0;
 	
+	if( !meuNo ) return 0;
+	
 	if( meuNo->noD == NULL && meuNo->noE == NULL )
-		return 0;
+		return 1;
 	if( meuNo->noD )   // meuNo->noD != NULL
 		alturaD = altura( meuNo->noD );
 	if( meuNo->noE )  // meuNo->noE != NULL
@@ -45,6 +106,10 @@ int altura( NO *meuNo ){
 		return alturaE+1;
 	else
 		return alturaD+1;
+}
+// Fator de balanceamento
+int fb( NO *no ) {
+	return altura( no->noD ) - altura( no->noE );
 }
 
 NO *pai( NO *r, NO *noInteresse ) {
@@ -84,7 +149,7 @@ void encontraNoePai(NO *raiz) {
 	while(1) {
 		printf("\nEntre com carga a ser encontrada (0 termina): ");
 		scanf("%d", &valor);
-		if(!valor) return 0;
+		if(!valor) return;
 			
 		n = buscaNo( raiz, valor );
 		if(n) {
@@ -101,6 +166,36 @@ void encontraNoePai(NO *raiz) {
 			printf("Carga não encontrada\n");
 		}
 }
+void populaArvore( NO **noPai ){
+
+/*	insere( noPai, 1);
+	insere( noPai, 3);	
+	insere( noPai, 5);	
+	insere( noPai, 7);
+	insere( noPai, 9);	
+	insere( noPai, 12);
+	insere( noPai, 43);
+	insere( noPai, 34);	
+	insere( noPai, 4);	
+	insere( noPai, 6);
+	insere( noPai, 17);	
+	insere( noPai, 18);
+	insere( noPai, 19);
+	insere( noPai, 20);	
+	insere( noPai, 11);	
+	insere( noPai, 45);
+	insere( noPai, 98);	
+	insere( noPai, 72);*/
+	
+	insere( noPai, 50); //p
+	insere( noPai, 20); //u
+	insere( noPai, 30); //v
+ 	insere( noPai, 1); // T1
+ 	insere( noPai, 25); // T2
+ 	insere( noPai, 40); // T3
+ 	insere( noPai, 99); // T4
+	}	
+
 
 void entraDados( NO **noPai ){
 	int inteiroLido;
@@ -116,10 +211,46 @@ void entraDados( NO **noPai ){
 	}
 }
 
+
+// Rotação Direita
+void rotacaoDireita( NO **pai ){
+	NO *p, *u;
+	p = *pai;
+	u = p->noE;
+	*pai = u;
+	p->noE = u->noD;
+	u->noD = p;
+}
+// Rotação Esquerda
+void rotacaoEsquerda( NO **pai ){
+	NO *p, *u;
+	p = *pai;
+	u = p->noD;
+	*pai = u;
+	p->noD = u->noE;
+	u->noE = p;
+}
+// Rotação DuplaDireita
+void rotacaoDuplaDireita( NO **pai ){
+	NO *p;
+	
+	p = *pai;
+	rotacaoEsquerda( &(p->noE) );
+	rotacaoDireita( pai );
+}
+// Rotação DuplaEsquerda
+void rotacaoDuplaEsquerda( NO **pai ){
+	NO *p;
+	
+	p = *pai;
+	rotacaoDireita( &(p->noD) );
+	rotacaoEsquerda( pai );
+}
+
 void emOrdem( NO *noPai ) {
 	if( noPai->noE )
 		emOrdem(noPai->noE);
-	printf("%d\n", noPai->carga );
+	printf("%d - FB: %d\n", noPai->carga,  fb(noPai) );
 	if( noPai->noD )
 		emOrdem(noPai->noD);
 }
@@ -142,14 +273,29 @@ void posOrdem( NO *noPai ) {
 
 int main() {
 	NO *raiz = NULL;
-
-	entraDados( &raiz );
-	printf("\nA altura da sua árvore binária é: %d\n\n", altura(raiz) );
+	NO *ptr;
+	// entraDados( &raiz );
+	
+	populaArvore( &raiz );
+	
+	printf("\nA altura da árvore binária é: %d\n\n", altura(raiz) );
 
 	emOrdem( raiz );
-	
-	encontraNoePai( raiz );
-	
+	ptr = checaAVL(raiz);
+	if( !ptr) 
+		printf("árvore balanceada\n");
+	else
+		printf("árvore não balanceada no nó com carga %d\n", ptr->carga);
+	//rotacaoEsquerda(&raiz);
+	//printf("\n");
+	//emOrdem( raiz );
+	rotacaoDuplaDireita( &raiz );
+	emOrdem( raiz );	
+	ptr = checaAVL(raiz);
+	if(!ptr)
+		printf("árvore balanceada\n");
+	else
+		printf("árvore não balanceada no nó com carga %d\n", ptr->carga);
 }
 
 
