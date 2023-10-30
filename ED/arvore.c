@@ -1,24 +1,9 @@
-// arvore.c - implementação de árvore binária
+// arvore.c - implementação de árvore binária de busca
 //
 
 #include <stdio.h>
 #include <stdlib.h>
-
-
-typedef struct no {
-	int carga;	
-
-	struct no *noE;
-	struct no *noD;
-	} NO;
-
-void insere( NO **, int  );
-NO *checaAVL( NO *noPai );
-void insereAVL( NO **noPai, int valor );
-int altura( NO *meuNo );
-int fb( NO *no );
-NO *pai( NO *r, NO *noInteresse );
-
+#include "arvore.h"
 	
 void insere( NO **noPai, int valor ){
 	NO *novoNo;
@@ -37,6 +22,11 @@ void insere( NO **noPai, int valor ){
 		insere( &((*noPai)->noE ), valor);
 	else
 		insere( &((*noPai)->noD ), valor);
+}
+
+// Fator de balanceamento
+int fb( NO *no ) {
+	return altura( no->noD ) - altura( no->noE );
 }
 
 NO *checaAVL( NO *noPai ){
@@ -58,11 +48,11 @@ NO *checaAVL( NO *noPai ){
 	return NULL;
 }
 
-
-
+// insereAVL - insere nó mantendo a árvore AVL
 void insereAVL( NO **noPai, int valor ){
 	NO *novoNo;
 	int fbPai;
+	int desbalanceado = 0;
 	
 	novoNo = malloc( sizeof(NO) );
 	if(novoNo==NULL) exit(-1);
@@ -79,16 +69,56 @@ void insereAVL( NO **noPai, int valor ){
 
 	if( (*noPai)->carga > valor) {
 		if(fbPai==-1) // desbalanceou
-		
+			desbalanceado = 1;
 		insere( &((*noPai)->noE ), valor);
 		}
 	else {
 		if(fbPai==1)  // desbalanceou
-		
+			desbalanceado = 1;		
 		insere( &((*noPai)->noD ), valor);
 		}
+	if( desbalanceado )
+		balanceiaAVL(noPai);
+		
 }
 
+void balanceiaAVL( NO **no) {
+	int fator, ffe, ffd;
+
+	fator = fb(*no);
+	if( fator >= -1 && fator <= 1 ){
+		return ;
+	}
+	
+	if(fator==-2) {
+		ffe = fb( (*no)->noE );
+		ffd = fb( (*no)->noD );
+		if  ( ffe==+1 || ffd==+1 ) {
+			if( ffe == 1 ) {
+				rotacaoEsquerda( &(*no)->noE );
+			}
+			else {// ffd == +1
+				rotacaoEsquerda( &(*no)->noD );
+			}
+		}
+		rotacaoDireita( no );
+	}
+	if(fator==2){
+		ffe = fb( (*no)->noE );
+		ffd = fb( (*no)->noD );
+		if  ( ffe==-1 || ffd==-1 ) {
+			if( ffe == 1 ) {
+				rotacaoDireita( &(*no)->noE );
+			}
+			else {// ffd == +1
+				rotacaoDireita( &(*no)->noD );
+			}
+		}
+		rotacaoEsquerda( no );
+	}
+
+
+}
 
 int altura( NO *meuNo ){
 	int alturaD=0;
@@ -107,11 +137,8 @@ int altura( NO *meuNo ){
 	else
 		return alturaD+1;
 }
-// Fator de balanceamento
-int fb( NO *no ) {
-	return altura( no->noD ) - altura( no->noE );
-}
 
+/* 
 NO *pai( NO *r, NO *noInteresse ) {
 	
 	if( noInteresse == r ) return NULL;
@@ -127,7 +154,7 @@ NO *pai( NO *r, NO *noInteresse ) {
 		return pai( r->noE, noInteresse );
 	}
 }
-
+*/ 
 NO *buscaNo( NO *raiz, int valor ){
 	if( raiz->carga == valor )
 		return raiz;
@@ -142,6 +169,7 @@ NO *buscaNo( NO *raiz, int valor ){
 
 }
 
+/*
 void encontraNoePai(NO *raiz) {
 	NO *n, *p;
 	int valor;	
@@ -166,36 +194,30 @@ void encontraNoePai(NO *raiz) {
 			printf("Carga não encontrada\n");
 		}
 }
+*/
+
 void populaArvore( NO **noPai ){
 
-/*	insere( noPai, 1);
-	insere( noPai, 3);	
-	insere( noPai, 5);	
-	insere( noPai, 7);
-	insere( noPai, 9);	
-	insere( noPai, 12);
-	insere( noPai, 43);
-	insere( noPai, 34);	
-	insere( noPai, 4);	
-	insere( noPai, 6);
-	insere( noPai, 17);	
-	insere( noPai, 18);
-	insere( noPai, 19);
-	insere( noPai, 20);	
-	insere( noPai, 11);	
-	insere( noPai, 45);
-	insere( noPai, 98);	
-	insere( noPai, 72);*/
+	insereAVL( noPai, 1);
+	insereAVL( noPai, 3);	
+	insereAVL( noPai, 5);	
+	insereAVL( noPai, 7);
+	insereAVL( noPai, 9);	
+	insereAVL( noPai, 12);
+	insereAVL( noPai, 43);
+	insereAVL( noPai, 34);	
+	insereAVL( noPai, 4);	
+	insereAVL( noPai, 6);
+	insereAVL( noPai, 17);	
+	insereAVL( noPai, 18);
+	insereAVL( noPai, 19);
+	insereAVL( noPai, 20);	
+	insereAVL( noPai, 11);	
+	insereAVL( noPai, 45);
+	insereAVL( noPai, 98);	
+	insereAVL( noPai, 72);
 	
-	insere( noPai, 50); //p
-	insere( noPai, 20); //u
-	insere( noPai, 30); //v
- 	insere( noPai, 1); // T1
- 	insere( noPai, 25); // T2
- 	insere( noPai, 40); // T3
- 	insere( noPai, 99); // T4
-	}	
-
+}	
 
 void entraDados( NO **noPai ){
 	int inteiroLido;
@@ -206,12 +228,9 @@ void entraDados( NO **noPai ){
 		scanf("%d", &inteiroLido);
 		if( inteiroLido <=0 )
 			break;
-		
 		insere( noPai, inteiroLido); 
 	}
 }
-
-
 // Rotação Direita
 void rotacaoDireita( NO **pai ){
 	NO *p, *u;
@@ -245,7 +264,7 @@ void rotacaoDuplaEsquerda( NO **pai ){
 	p = *pai;
 	rotacaoDireita( &(p->noD) );
 	rotacaoEsquerda( pai );
-}
+}	
 
 void emOrdem( NO *noPai ) {
 	if( noPai->noE )
