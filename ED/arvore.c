@@ -26,6 +26,7 @@ void insere( NO **noPai, int valor ){
 
 // Fator de balanceamento
 int fb( NO *no ) {
+	if(no==NULL) return 0;
 	return altura( no->noD ) - altura( no->noE );
 }
 
@@ -70,12 +71,12 @@ void insereAVL( NO **noPai, int valor ){
 	if( (*noPai)->carga > valor) {
 		if(fbPai==-1) // desbalanceou
 			desbalanceado = 1;
-		insere( &((*noPai)->noE ), valor);
+		insereAVL( &((*noPai)->noE ), valor);
 		}
 	else {
 		if(fbPai==1)  // desbalanceou
 			desbalanceado = 1;		
-		insere( &((*noPai)->noD ), valor);
+		insereAVL( &((*noPai)->noD ), valor);
 		}
 	if( desbalanceado )
 		balanceiaAVL(noPai);
@@ -138,7 +139,7 @@ int altura( NO *meuNo ){
 		return alturaD+1;
 }
 
-/* 
+
 NO *pai( NO *r, NO *noInteresse ) {
 	
 	if( noInteresse == r ) return NULL;
@@ -154,7 +155,7 @@ NO *pai( NO *r, NO *noInteresse ) {
 		return pai( r->noE, noInteresse );
 	}
 }
-*/ 
+
 NO *buscaNo( NO *raiz, int valor ){
 	if( raiz->carga == valor )
 		return raiz;
@@ -169,7 +170,7 @@ NO *buscaNo( NO *raiz, int valor ){
 
 }
 
-/*
+
 void encontraNoePai(NO *raiz) {
 	NO *n, *p;
 	int valor;	
@@ -194,7 +195,68 @@ void encontraNoePai(NO *raiz) {
 			printf("Carga não encontrada\n");
 		}
 }
-*/
+
+NO *maiorNo(NO *raiz) {
+	if(raiz->noD==NULL)
+		return raiz;
+	return maiorNo(raiz->noD);
+}
+
+void removeNo(NO **raiz, NO *n){
+	NO *p, *ptr;
+	NO **origem;
+
+	p = pai( *raiz, n );
+	if( p == *raiz )
+		origem = raiz;
+	else {
+		if(n == p->noD)
+			origem = &(p->noD);
+		else
+			origem = &(p->noE);
+		}	
+
+	if( n->noD == NULL && n->noE == NULL ) {  // Nó é folha
+		*origem = NULL;
+	}
+	else {
+		if( n->noD != NULL && n->noE != NULL) {
+			ptr = maiorNo( n->noE );
+			ptr->noE = n->noE;
+			ptr->noD = n->noD;
+			*origem = ptr;
+		}
+		else {   // apenas tem filho de um lado 
+			if( n->noD )  //  n->noE == NULL
+				*origem = n->noD;
+			else
+				*origem = n->noE;
+
+		}
+
+	}
+	free(n);
+}
+
+void selecionaNoApaga(NO **raiz) {
+	NO *n, *p;
+	int valor;	
+	int fator;
+
+	while(1) {
+		printf("\nEntre com carga a ser encontrada e apagada (0 termina): ");
+		scanf("%d", &valor);
+		if(!valor) return;
+
+		n = buscaNo( *raiz, valor );
+		if(n==NULL) {
+			printf("Nó não encontrado");
+			continue;
+		}
+		removeNo( raiz, n ); 
+	}
+
+}
 
 void populaArvore( NO **noPai ){
 
@@ -300,21 +362,20 @@ int main() {
 	printf("\nA altura da árvore binária é: %d\n\n", altura(raiz) );
 
 	emOrdem( raiz );
+
 	ptr = checaAVL(raiz);
 	if( !ptr) 
 		printf("árvore balanceada\n");
 	else
 		printf("árvore não balanceada no nó com carga %d\n", ptr->carga);
-	//rotacaoEsquerda(&raiz);
-	//printf("\n");
-	//emOrdem( raiz );
-	rotacaoDuplaDireita( &raiz );
-	emOrdem( raiz );	
-	ptr = checaAVL(raiz);
-	if(!ptr)
-		printf("árvore balanceada\n");
-	else
-		printf("árvore não balanceada no nó com carga %d\n", ptr->carga);
+
+	
+	selecionaNoApaga( &raiz );
+	
+
+	emOrdem( raiz );
+
+
 }
 
 
