@@ -66,6 +66,12 @@ typedef struct ListaCadInd {
 	struct ListaCadInd *prox;
 } LISTACADIND;
 
+typedef struct no {
+	CADIND carga;	
+
+	struct no *noE;
+	struct no *noD;
+	} NOCAD;
 
 
 // Protótipos de funções

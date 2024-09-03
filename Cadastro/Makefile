@@ -4,10 +4,16 @@
 CC = gcc
 CFLAG = -g
 
-all : buscaindexe buscagexe criaindexe pegatamexe buscaindlistaexe
+all : buscaindexe buscagexe criaindexe pegatamexe buscaindlistaexe buscaarvorebinexe criaHashCadastroexe
 
 clean : 
 	rm *.o
+
+criaHashCadastroexe: criaHashCadastro.o utilCadastro.o
+	$(CC) -o  criaHashCadastroexe criaHashCadastro.o utilCadastro.o
+
+buscaarvorebinexe : buscaArvoreBin.o utilCadastro.o
+	$(CC) -o buscaarvorebinexe buscaArvoreBin.o utilCadastro.o
 
 pegatamexe : cadPegaTam.o utilCadastro.o
 	$(CC) -o pegatamexe cadPegaTam.o utilCadastro.o
@@ -23,6 +29,9 @@ criaindexe : criaIndiceCadastro.o  utilCadastro.o
 	
 buscaindlistaexe : buscaIndexadaCadGeralLista.o utilCadastro.o
 	$(CC) -o buscaindlistaexe     buscaIndexadaCadGeralLista.o utilCadastro.o
+
+buscaArvoreBin.o : buscaArvoreBin.c cadastro.h
+	$(CC) $(CFLAG) -c buscaArvoreBin.c
 
 cadPegaTam.o : cadPegaTam.c cadastro.h
 	$(CC) $(CFLAG) -c cadPegaTam.c
@@ -42,8 +51,7 @@ criaIndiceCadastro.o : criaIndiceCadastro.c cadastro.h
 buscaIndexadaCadGeralLista.o : buscaIndexadaCadGeralLista.c cadastro.h
 	$(CC) $(CFLAG) -c   buscaIndexadaCadGeralLista.c 
 
-
-
-
+criaHashCadastro.o : criaHashCadastro.c cadastro.h 
+	$(CC) $(CFLAG) -c   criaHashCadastro.c 
 
 	
